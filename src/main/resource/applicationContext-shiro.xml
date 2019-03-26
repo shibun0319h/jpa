@@ -1,0 +1,84 @@
+<!--
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xsi:schemaLocation="
+         http://www.springframework.org/schema/beans
+         http://www.springframework.org/schema/beans/spring-beans.xsd
+         http://www.springframework.org/schema/context
+         http://www.springframework.org/schema/context/spring-context.xsd
+         http://www.springframework.org/schema/tx
+         http://www.springframework.org/schema/tx/spring-tx.xsd
+         http://www.springframework.org/schema/data/jpa
+         http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
+
+    &lt;!&ndash; 配置安全管理器&ndash;&gt;
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="realm" ref="myRealm1"></property>
+    </bean>
+
+    &lt;!&ndash;配置realm&ndash;&gt;
+    <bean name="myRealm1" class="ka.shibun.jpa.shiro.realm.JpaRealm">
+        <property name="credentialsMatcher">
+            &lt;!&ndash;设置加密匹配方案&ndash;&gt;
+            <bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+                &lt;!&ndash; 编码的方式使用:md5 &ndash;&gt;
+                <property name="hashAlgorithmName" value="MD5"/>
+                &lt;!&ndash; 编码的次数:10 &ndash;&gt;
+                <property name="hashIterations" value="10"/>
+            </bean>
+        </property>
+
+    </bean>
+
+    &lt;!&ndash; shiro bean 管理注解和生命周期 &ndash;&gt;
+    &lt;!&ndash; 3.lifecycleBeanPostProcessor：可以自动调用在Spring Ioc窗口中 Shiro bean的生成周期方法 &ndash;&gt;
+    <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+    &lt;!&ndash; 4.启动ioc容器中使用 shiro的注解，但是必需配置在Spring Ioc容器中Shiro bean的生成周期方法 &ndash;&gt;
+    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"
+          depends-on="lifecycleBeanPostProcessor"/>
+    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+        <property name="securityManager" ref="securityManager"/>
+    </bean>
+
+    &lt;!&ndash; shiro的配置 真实过滤器 备注 id和代理过滤器一致&ndash;&gt;
+
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <property name="securityManager" ref="securityManager"/>
+        &lt;!&ndash; 登录的url,如果没有登录，你访问的路径会跳到这个页面 &ndash;&gt;
+        <property name="loginUrl" value="/login"/>
+        &lt;!&ndash; 登录成功的url,如果登录成功，会跳转到这个页面 &ndash;&gt;
+        <property name="successUrl" value="/main"/>
+        &lt;!&ndash; 没有权限时跳转到这个位置 &ndash;&gt;
+        <property name="unauthorizedUrl" value="/s/unauthorized.jsp"/>
+
+        &lt;!&ndash;引用下面自定义的过滤器&ndash;&gt;
+        <property name="filters">
+            <map>
+                <entry key="perms" value-ref="myfilter"></entry>
+            </map>
+        </property>
+        &lt;!&ndash; 配置资源(url)访问权限&ndash;&gt;
+        &lt;!&ndash; <property name="filterChainDefinitions">
+         <value>
+             /s/login.jsp=anon
+             /login=anon
+             &lt;!&ndash;以后都要从数据库读取权限出来&ndash;&gt;
+             /s/permission.jsp=perms[user:*]
+             /** = authc
+         </value>
+      </property>&ndash;&gt;
+        &lt;!&ndash; map的方式操作权限 filterChainDefinitionMap LinkedHashMap&ndash;&gt;
+        <property name="filterChainDefinitionMap" ref="filterChainDefinitionBean"></property>
+    </bean>
+    &lt;!&ndash;配置自定义权限处理的过滤器&ndash;&gt;
+    <bean id="myfilter" class="ka.shibun.jpa.shiro.realm.MyPermissionsAuthorizationFilter"></bean>
+    &lt;!&ndash; 调用方法&ndash;&gt;
+    <bean id="filterChainDefinitionBean" factory-bean="filterChainDefinitionMapBean" factory-method="createFilterChainDefinitionMap"></bean>
+    &lt;!&ndash; 普通bean&ndash;&gt;
+    <bean id="filterChainDefinitionMapBean" class="ka.shibun.jpa.shiro.realm.FilterChainDefinitionMapBuilder"></bean>
+
+</beans>-->
